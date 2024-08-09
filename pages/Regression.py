@@ -38,11 +38,6 @@ nav = st.sidebar.radio("End-to-end pipeline",["Feature calculation","Data cleani
 
 if nav == "Feature calculation":
 
-    import streamlit as st
-    import logging
-
-    # Assume the methods load_data, descriptor_methods, fingerprint_methods, qm_methods, descriptor_set_methods, and save_data are defined elsewhere
-
     # Placeholder for the selected methods (these should come from your Streamlit sidebar selections)
     selected_descriptor_methods = st.sidebar.multiselect("Select Descriptor Methods", options=list(descriptor_methods.keys()))
     selected_fingerprint_methods = st.sidebar.multiselect("Select Fingerprint Methods", options=list(fingerprint_methods.keys()))
