@@ -1,0 +1,31 @@
+[2024-07-30 11:14:43,060] root - ERROR - Error running descriptor method NitrogenRuleCalculator1: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [100]
+        and exception block line number : [97]
+        error message : ['SMILES']
+        
+[2024-07-30 11:14:43,062] root - ERROR - Error running fingerprint method FingerprintCalculator: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [118]
+        and exception block line number : [109]
+        error message : ['SMILES']
+        
+[2024-07-30 11:14:43,063] root - ERROR - Error running QM method ElectronicPropertiesCalculator: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [128]
+        and exception block line number : [125]
+        error message : ['SMILES']
+        
+[2024-07-30 11:14:43,082] root - ERROR - Error running descriptor set method MolecularDescriptors: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [138]
+        and exception block line number : [135]
+        error message : ['SMILES']
+        
+[2024-07-30 11:14:43,086] root - INFO - Displayed DataFrame shape: (71, 31)
+[2024-07-30 11:14:43,088] root - INFO - Download button created
+[2024-07-30 11:14:43,090] root - INFO - Data saved successfully

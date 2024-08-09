@@ -1,0 +1,9 @@
+[2024-07-26 09:36:40,106] root - WARNING - No methods selected
+[2024-07-26 09:36:45,820] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-26 09:36:45,890] root - INFO - Displayed DataFrame shape: (251, 1435)
+[2024-07-26 09:36:46,199] root - INFO - Download button created
+[2024-07-26 09:36:46,511] root - INFO - Data saved successfully
+[2024-07-26 09:38:51,361] root - INFO - Ran descriptor set method DescriptorCalculator
+[2024-07-26 09:38:51,437] root - INFO - Displayed DataFrame shape: (261, 1515)
+[2024-07-26 09:38:51,747] root - INFO - Download button created
+[2024-07-26 09:38:52,076] root - INFO - Data saved successfully

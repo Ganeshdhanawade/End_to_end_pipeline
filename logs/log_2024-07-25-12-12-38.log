@@ -1,0 +1,43 @@
+[2024-07-25 12:53:46,114] root - INFO - Ran descriptor method Electron_orbital_Zeff
+[2024-07-25 12:53:46,231] root - INFO - Ran descriptor method MolecularPropertiesCalculator
+[2024-07-25 12:53:46,412] root - INFO - Ran descriptor method NitrogenRuleCalculator1
+[2024-07-25 12:53:46,416] root - INFO - Displayed DataFrame shape: (261, 41)
+[2024-07-25 12:53:46,424] root - INFO - Download button created
+[2024-07-25 12:53:46,432] root - INFO - Data saved successfully
+[2024-07-25 13:00:10,243] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-25 13:00:32,638] root - INFO - Ran descriptor method DIPOL_RI
+[2024-07-25 13:00:33,764] root - INFO - Ran descriptor method M_Power_RDkit_Mol_Property
+[2024-07-25 13:00:46,079] root - INFO - Ran descriptor method Mol_Descriptor
+[2024-07-25 13:00:46,085] root - INFO - Displayed DataFrame shape: (261, 34)
+[2024-07-25 13:00:46,091] root - INFO - Download button created
+[2024-07-25 13:00:46,098] root - INFO - Data saved successfully
+[2024-07-25 13:02:58,393] root - INFO - Ran descriptor method BFGS_Dielectric_Constants
+[2024-07-25 13:02:58,661] root - INFO - Ran descriptor method Electron_orbital_Zeff
+[2024-07-25 13:02:58,780] root - INFO - Ran descriptor method MolecularPropertiesCalculator
+[2024-07-25 13:03:20,226] root - INFO - Ran descriptor method LewisAcidBaseAnalyzer
+[2024-07-25 13:03:22,423] root - INFO - Ran descriptor method Charge_Distribution_Descriptor
+[2024-07-25 13:03:53,932] root - INFO - Ran descriptor method Molar_Activity_Surface_Area
+[2024-07-25 13:04:06,159] root - INFO - Ran descriptor method Mol_Descriptor
+[2024-07-25 13:04:28,684] root - INFO - Ran descriptor method DIPOL_RI
+[2024-07-25 13:04:29,382] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-25 13:04:29,391] root - INFO - Displayed DataFrame shape: (261, 117)
+[2024-07-25 13:04:29,411] root - INFO - Download button created
+[2024-07-25 13:04:29,434] root - INFO - Data saved successfully
+[2024-07-25 15:03:40,956] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-25 15:04:02,759] root - INFO - Ran descriptor method DIPOL_RI
+[2024-07-25 15:04:02,764] root - INFO - Displayed DataFrame shape: (261, 8)
+[2024-07-25 15:04:02,766] root - INFO - Download button created
+[2024-07-25 15:04:02,769] root - INFO - Data saved successfully
+[2024-07-25 15:15:23,276] root - INFO - Data saved to /home/ganesh/End_to_end_pipeline/Data/clean_data/clean_dataset.csv
+[2024-07-25 15:18:33,665] root - INFO - Ran descriptor set method DescriptorCalculator
+[2024-07-25 15:18:33,738] root - INFO - Displayed DataFrame shape: (261, 1515)
+[2024-07-25 15:18:34,048] root - INFO - Download button created
+[2024-07-25 15:18:34,369] root - INFO - Data saved successfully
+[2024-07-25 15:18:47,613] root - INFO - Data saved to /home/ganesh/End_to_end_pipeline/Data/clean_data/clean_dataset.csv
+[2024-07-25 15:19:00,400] root - INFO - Data saved to /home/ganesh/End_to_end_pipeline/Data/clean_data/clean_dataset.csv
+[2024-07-25 15:19:03,542] root - INFO - Data saved to /home/ganesh/End_to_end_pipeline/Data/clean_data/clean_dataset.csv
+[2024-07-25 15:21:02,567] root - INFO - Ran descriptor set method DescriptorCalculator
+[2024-07-25 15:21:02,642] root - INFO - Displayed DataFrame shape: (261, 1515)
+[2024-07-25 15:21:02,948] root - INFO - Download button created
+[2024-07-25 15:21:03,272] root - INFO - Data saved successfully
+[2024-07-25 15:21:09,567] root - INFO - Data saved to /home/ganesh/End_to_end_pipeline/Data/clean_data/clean_dataset.csv

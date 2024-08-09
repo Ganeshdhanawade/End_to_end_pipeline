@@ -1,0 +1,13 @@
+[2024-07-25 12:04:31,423] root - WARNING - No methods selected
+[2024-07-25 12:04:41,386] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-25 12:05:03,190] root - INFO - Ran descriptor method DIPOL_RI
+[2024-07-25 12:05:04,278] root - INFO - Ran descriptor method M_Power_RDkit_Mol_Property
+[2024-07-25 12:05:04,282] root - INFO - Displayed DataFrame shape: (261, 23)
+[2024-07-25 12:05:04,289] root - INFO - Download button created
+[2024-07-25 12:05:04,294] root - INFO - Data saved successfully
+[2024-07-25 12:09:29,821] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-25 12:09:30,002] root - INFO - Ran descriptor method NitrogenRuleCalculator1
+[2024-07-25 12:09:59,810] root - INFO - Ran descriptor method Molar_Activity_Surface_Area
+[2024-07-25 12:09:59,816] root - INFO - Displayed DataFrame shape: (261, 17)
+[2024-07-25 12:09:59,821] root - INFO - Download button created
+[2024-07-25 12:09:59,828] root - INFO - Data saved successfully

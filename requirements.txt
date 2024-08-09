@@ -1,0 +1,10 @@
+pandas
+numpy
+matplotlib
+streamlit
+xgboost
+lightgbm
+seaborn
+#pycaret==2.3.10
+
+-e .

@@ -1,0 +1,18 @@
+[2024-07-24 12:03:10,105] root - WARNING - No methods selected
+[2024-07-24 12:03:15,474] root - INFO - Ran descriptor method NitrogenRuleCalculator1
+[2024-07-24 12:03:15,477] root - INFO - Displayed DataFrame shape: (6, 14)
+[2024-07-24 12:03:15,479] root - INFO - Download button created
+[2024-07-24 12:03:15,480] root - INFO - Data saved successfully
+[2024-07-24 16:04:16,392] root - INFO - Ran descriptor method NitrogenRuleCalculator1
+[2024-07-24 16:04:16,414] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-24 16:04:17,482] root - INFO - Ran descriptor method DIPOL_RI
+[2024-07-24 16:04:17,541] root - INFO - Ran descriptor method M_Power_RDkit_Mol_Property
+[2024-07-24 16:04:17,998] root - INFO - Ran descriptor method Mol_Descriptor
+[2024-07-24 16:04:18,003] root - INFO - Displayed DataFrame shape: (6, 42)
+[2024-07-24 16:04:18,005] root - INFO - Download button created
+[2024-07-24 16:04:18,006] root - INFO - Data saved successfully
+[2024-07-24 16:53:44,289] root - WARNING - No methods selected
+[2024-07-24 16:53:50,823] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-07-24 16:53:50,825] root - INFO - Displayed DataFrame shape: (6, 10)
+[2024-07-24 16:53:50,826] root - INFO - Download button created
+[2024-07-24 16:53:50,828] root - INFO - Data saved successfully
