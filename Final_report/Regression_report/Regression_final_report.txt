@@ -1,0 +1,21 @@
+descriptors:
+ - MolecularDescriptors
+
+fingerprints:
+
+sub-fingerprint:
+ - ecfp4
+
+qms:
+
+descriptor_sets:
+
+Dataset Columns:
+ - res
+ - interactive Donar electrons count
+ - interactive Acceptore electrons count
+ - negative ionizable electrones count
+ - positive_ionizable electrons counts
+
+Selected Model:
+ - False

@@ -13,6 +13,8 @@ ROOt_DIR_KEY = os.getcwd()
 ## ---Dataset---
 DATA_SOURCE= "Data"
 
+# ----------------- Regression ------------------ #
+
 # feature calculated dataset
 CALCULATED_FEATURE_DATA = "feature_calculated_data"
 FEATURE_CALCULATED_DATA_CSV = "feature_calulated_data.csv"
@@ -46,3 +48,11 @@ VALIDATION_DATA_CSV="validation_final.csv"
 ### validation - after droping dulicate smiles save
 DUPLICATED_CLEAN_VAL_FOLDER = "Duplicated_clean"
 DUPLICATED_CLEAN_VAL_CSV= "duplicated_clean_val.csv"
+
+## validation - save final model
+FINAL_MODEL_FOLDER = "Final_report"
+TEXT_REPORT = 'text_files'
+ZIP_REPORT = 'zip_files'
+REPORT_FOLDER = 'Regression_report'
+REGRESSION_FINAL_TEXT = 'Regression_final_report.txt'
+SAVE_REGRESSION_REPORT = 'Regression_report.zip'

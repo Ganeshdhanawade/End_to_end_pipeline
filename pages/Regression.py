@@ -1,41 +1,73 @@
 import sys,os
 sys.path.append('/home/ganesh')
 
+## import the libraries
 import os
 import base64
 import pickle
-import streamlit as st
-import numpy as np
+import shutil
 import pandas as pd
-from src.package.descriptor_names import descriptor_methods, fingerprint_methods, qm_methods, descriptor_set_methods
+import streamlit as st
+from src.utils import *
+from sklearn import neighbors
+from src.logger import logging
+import matplotlib.pyplot as plt
+from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
 from src.config.configuration import *
 from src.exception import CustomException  # Import the CustomException class
-from src.logger import logging
-from src.utils import *
-import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
-from src.preproces.data_cleaning import DataCleaner
-from src.preproces.feature_selection import FeatureSelector
+from sklearn.tree import DecisionTreeRegressor
 from src.preproces.model_building import Models
+from src.preproces.data_cleaning import DataCleaner
+from sklearn.metrics import r2_score,mean_squared_error
+from src.preproces.feature_selection import FeatureSelector
 from sklearn.feature_selection import f_regression, mutual_info_regression
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
-from sklearn.tree import DecisionTreeRegressor
-from xgboost import XGBRegressor
-from sklearn import neighbors
-from lightgbm import LGBMRegressor
-from sklearn.metrics import r2_score,mean_squared_error
+from src.package.descriptor_names import descriptor_methods, fingerprint_methods, qm_methods, descriptor_set_methods
 
-# Initialize session state variables if they do not exist
+
+#------------------------------------------------------------------------
+# Initialize session state - feature selection
 if 'df' not in st.session_state:
     st.session_state['df'] = None
 
 if 'feature_selection_done' not in st.session_state:
     st.session_state['feature_selection_done'] = False
 
+# Initialization of session - data validation
+if 'df1' not in st.session_state:
+    st.session_state['df1'] = None
+
+if 'data_saved' not in st.session_state:
+    st.session_state['data_saved'] = False
+
+if 'selected_descriptor_methods' not in st.session_state:
+    st.session_state['selected_descriptor_methods'] = load_selected_methods(DESCRIPTOR_METHODS_FILE_PATH)
+
+if 'selected_fingerprint_methods' not in st.session_state:
+    st.session_state['selected_fingerprint_methods'] = load_selected_methods(FINGERPRINT_METHODS_FILE_PATH)
+
+if 'selected_qm_methods' not in st.session_state:
+    st.session_state['selected_qm_methods'] = load_selected_methods(QM_METHODS_FILE_PATH)
+
+if 'selected_descriptor_set_methods' not in st.session_state:
+    st.session_state['selected_descriptor_set_methods'] = load_selected_methods(DESCRIPTOR_SET_METHODS_FILE_PATH)
+
+if 'selected_fingerprint_types' not in st.session_state:
+    st.session_state['selected_fingerprint_types'] = []
+
+if 'data_final' not in st.session_state:
+    st.session_state['data_final'] = False
+
+## save the model name
+if 'model_save' not in st.session_state:
+    st.session_state['model_save'] = False
+
+#-----------------------------------------------------------------------
 ### page navigations
 nav = st.sidebar.radio("End-to-end pipeline",["Feature calculation","Data cleaning","Feature selection","Model building","Data validation"])
 
+#-----------------------------------------------------------------------
 if nav == "Feature calculation":
 
     # Placeholder for the selected methods (these should come from your Streamlit sidebar selections)
@@ -134,8 +166,8 @@ if nav == "Feature calculation":
 
                     st.write("Resulting DataFrame:")
                     st.write(df.head())
-
-                    # Create columns for buttons
+             
+                    # -------------Create columns for buttons--------------
                     col1, col2, col3 = st.columns([2, 1, 1])
 
                     with col1:
@@ -161,7 +193,9 @@ if nav == "Feature calculation":
                     logging.info("Data saved successfully")
 
 
+#----------------------------------------------------------------------------------
 if nav == "Data cleaning":
+
     st.title('Data Cleaner with Streamlit')
 
     st.sidebar.title("Settings")
@@ -212,11 +246,6 @@ if nav == "Data cleaning":
         st.write(f"Columns Dropped: {columns_dropped}")
         st.write(f"Drop columns names: {list(set(df.columns) - set(df_cleaned.columns))}")
 
-        # ##save the dataset
-        # if st.button("Save Cleaned Dataset"):
-        #     save_data(df_cleaned, DATA_CLEANING_PATH)
-        #     st.success(f"Model saved successfully to {DATA_CLEANING_PATH}")
-
         # Option to download cleaned dataset directly
         def download_link(object_to_download, download_filename, download_link_text):
             if isinstance(object_to_download, pd.DataFrame):
@@ -233,63 +262,8 @@ if nav == "Data cleaning":
         st.success(f"Model saved successfully to {DATA_CLEANING_PATH}")  
 
 
+#------------------------------------------------------------------------------
 if nav == "Feature selection":
-
-    # Function to plot horizontal bar chart
-    def plot_horizontal_bar(data, feature_col, value_col, title):
-        fig = px.bar(data, x=value_col, y=feature_col, orientation='h', title=title,
-                    labels={value_col: value_col, feature_col: feature_col},
-                    color=value_col, color_continuous_scale='Viridis')
-        fig.update_layout(xaxis_title=value_col, yaxis_title=feature_col)
-        st.plotly_chart(fig, use_container_width=True)
-
-    # Function to plot heatmap
-    def plot_heatmap(data, title):
-        fig = go.Figure(data=go.Heatmap(z=data.values,
-                                        x=data.columns,
-                                        y=data.index,
-                                        colorscale='YlGnBu',
-                                        colorbar=dict(title='Importance'),
-                                        zmin=0, zmax=data.values.max()))
-        fig.update_layout(title=title, xaxis_title='Feature', yaxis_title='Method')
-        st.plotly_chart(fig, use_container_width=True)
-
-    # Function to plot correlation heatmap
-    def plot_correlation_heatmap(data, title):
-        corr = data.corr()
-
-        # Create the text for the heatmap (correlation values)
-        text = np.round(corr.values, 2)
-
-        # Create the heatmap
-        fig = go.Figure(data=go.Heatmap(
-            z=corr.values,
-            x=corr.columns,
-            y=corr.index,
-            colorscale='RdBu',  # Using 'RdBu' colorscale, which is similar to 'coolwarm'
-            zmin=-1,
-            zmax=1,
-            hoverongaps=False,
-            colorbar=dict(title='Correlation', titleside='right'),
-            text=text,  # Add text to the heatmap
-            texttemplate='%{text}',  # Display the text
-            textfont={"size":12, "color":"black"},  # Customize text font
-            xgap=1,  # Add gap between cells for horizontal borders
-            ygap=1   # Add gap between cells for vertical borders
-        ))
-
-        # Update the layout of the figure
-        fig.update_layout(
-            title=title,
-            xaxis_nticks=len(corr.columns),
-            yaxis_nticks=len(corr.index),
-            xaxis=dict(tickmode='array', tickvals=list(range(len(corr.columns))), ticktext=corr.columns),
-            yaxis=dict(tickmode='array', tickvals=list(range(len(corr.index))), ticktext=corr.index),
-            plot_bgcolor='rgba(0,0,0,0)'  # Set the background color to transparent
-        )
-
-        # Display the Plotly figure in Streamlit
-        st.plotly_chart(fig, use_container_width=True)
 
     st.title("Feature Selection Dashboard")
 
@@ -374,14 +348,11 @@ if nav == "Feature selection":
             }).sort_values(by='Importance', ascending=False).head(top_features)
 
             # Plot for ANOVA F-test
-            plot_horizontal_bar(anova_scores_df, 'Feature', 'F-Score', 'Top Features by ANOVA F-test')
-            
+            plot_horizontal_bar(anova_scores_df, 'Feature', 'F-Score', 'Top Features by ANOVA F-test') 
             # Plot for Mutual Information
             plot_horizontal_bar(mi_scores_df, 'Feature', 'MI Score', 'Top Features by Mutual Information')
-            
             # Plot for Extra Trees
             plot_horizontal_bar(extra_trees_df, 'Feature', 'Importance', 'Top Features by Extra Trees')
-            
             # Plot for Random Forest
             plot_horizontal_bar(random_forest_df, 'Feature', 'Importance', 'Top Features by Random Forest')
 
@@ -420,6 +391,7 @@ if nav == "Feature selection":
             st.write("### Feature Selection Completed")
 
 
+#-----------------------------------------------------------------------------
 if nav == "Model building":
 
     st.title('Model building Pipeline')
@@ -490,6 +462,7 @@ if nav == "Model building":
                     
     with tab3:
         model_name_to_save = st.selectbox("Select Model to Save", ["DecisionTree", "XGBoost", "ExtraTrees", "RandomForest", "LGBM", "KNN"], key='save_model')
+        st.session_state['model_save'] = model_name_to_save
         if st.button("Save Model"):
             model_dict_to_save = {
                 'DecisionTree': DecisionTreeRegressor(),
@@ -514,41 +487,10 @@ if nav == "Model building":
             st.write("Model saved as final_model.pkl")
 
 
+#-----------------------------------------------------------------------------
 if nav == "Data validation":
     
-    import streamlit as st
-    import logging
-    import pickle
-    from sklearn.metrics import mean_squared_error, r2_score
-    import matplotlib.pyplot as plt
-
     # Assume the methods load_data, descriptor_methods, fingerprint_methods, qm_methods, descriptor_set_methods, and save_data are defined elsewhere
-    # Also assume that CustomException, load_selected_methods, and save_selected_methods are defined elsewhere
-
-    # Initialization of session state variables
-    if 'df1' not in st.session_state:
-        st.session_state['df1'] = None
-
-    if 'data_saved' not in st.session_state:
-        st.session_state['data_saved'] = False
-
-    if 'selected_descriptor_methods' not in st.session_state:
-        st.session_state['selected_descriptor_methods'] = load_selected_methods(DESCRIPTOR_METHODS_FILE_PATH)
-
-    if 'selected_fingerprint_methods' not in st.session_state:
-        st.session_state['selected_fingerprint_methods'] = load_selected_methods(FINGERPRINT_METHODS_FILE_PATH)
-
-    if 'selected_qm_methods' not in st.session_state:
-        st.session_state['selected_qm_methods'] = load_selected_methods(QM_METHODS_FILE_PATH)
-
-    if 'selected_descriptor_set_methods' not in st.session_state:
-        st.session_state['selected_descriptor_set_methods'] = load_selected_methods(DESCRIPTOR_SET_METHODS_FILE_PATH)
-
-    if 'selected_fingerprint_types' not in st.session_state:
-        st.session_state['selected_fingerprint_types'] = []
-
-    if 'data_final' not in st.session_state:
-        st.session_state['data_final'] = False
 
     # File uploader
     uploaded_file = st.file_uploader("Upload your dataset")
@@ -652,18 +594,12 @@ if nav == "Data validation":
                     logging.info("Data saved successfully")
 
             # Tabs for additional actions
-            tab21, tab22, tab23 = st.tabs(["Drop Duplicates", "Select Feature", "Validation"])
+            tab21, tab22, tab23, tab24 = st.tabs(["Drop Duplicates", "Select Feature", "Validation", "Model saving"])
 
             with tab21:
                 from ganesh_package.Classification import Descriptors_smile
                 
-                # Load and standardize data
-                # def process_data(train_df, val_df):
-                #     train_data = train_df.copy()
-                #     val_data = val_df.copy()
-                #     train_data['Standardized_SMILES'] = Descriptors_smile.STANDERDIZE_SMILES(train_data['SMILES'])
-                #     val_data['Standardized_SMILES'] = Descriptors_smile.STANDERDIZE_SMILES(val_data['SMILES'])
-                #     return train_data, val_data
+
                 def process_data(train_df, val_df):
                     train_data = train_df.copy()
                     val_data = val_df.copy()
@@ -781,6 +717,63 @@ if nav == "Data validation":
                     st.markdown("<h4 style='text-align: center;'>Actual vs Predicted Plot</h4>", unsafe_allow_html=True)
                     plot_predictions(y_true, y_pred)
 
+            with tab24:
+
+                # Define paths to your saved files
+                file_paths = {
+                    "descriptors": DESCRIPTOR_METHODS_FILE_PATH,
+                    "fingerprints": FINGERPRINT_METHODS_FILE_PATH,
+                    "sub-fingerprint": FINGERPRINT_TYPES_SUB_CATEGORY_PATH, 
+                    "qms": QM_METHODS_FILE_PATH,
+                    "descriptor_sets": DESCRIPTOR_SET_METHODS_FILE_PATH
+                }
+
+                # Load methods into a dictionary
+                all_selected_methods = load_methods(file_paths)
+
+                # Extract column names from the loaded dataset
+                clean_data = load_data(VALIDATION_DATA_PATH)
+                column_names = clean_data.columns.tolist()
+
+                # Select model name
+                model_name_to_save = st.session_state['model_save']
+
+                # Create necessary directories if they don't exist
+                os.makedirs(os.path.dirname(REGRESSION_TEXT_PATH), exist_ok=True)
+                os.makedirs(os.path.dirname(REGRESSION_ZIP_PATH), exist_ok=True)
+                os.makedirs(REGRESSION_MODEL_FOLDER, exist_ok=True)  # Ensure the output folder exists
+
+                # Save methods, column names, and model name to text file
+                save_to_txt(REGRESSION_TEXT_PATH, all_selected_methods, column_names, model_name_to_save)
+                
+                ## copy the pickle file
+                existing_pickle_target_path = os.path.join(REGRESSION_MODEL_FOLDER, os.path.basename(FINAL_MODEL_PICKLE_PATH))
+                if os.path.exists(FINAL_MODEL_PICKLE_PATH):
+                    shutil.copy(FINAL_MODEL_PICKLE_PATH, existing_pickle_target_path)
+
+                # Copy the text file to the folder
+                text_file_target_path = os.path.join(REGRESSION_MODEL_FOLDER, os.path.basename(REGRESSION_TEXT_PATH))
+                shutil.copy(REGRESSION_TEXT_PATH, text_file_target_path)
+
+                # Zip the folder
+                zip_folder(REGRESSION_MODEL_FOLDER, REGRESSION_ZIP_PATH)
+
+                # Prompt user for download
+                st.write("Are you interested in downloading the final model?")
+
+                # Button to download the zip file
+                if st.button("Yes, I want to download"):
+                    with open(REGRESSION_ZIP_PATH, "rb") as file:
+                        st.download_button(
+                            label="Download All Files",
+                            data=file,
+                            file_name="output_files.zip",
+                            mime="application/zip"
+                        )
+
+                    # st.write('Are you intersted to save that final model with information?')
+                    # if st.button("Save final model"):
+                    #     st.write('model save')
 
 
 

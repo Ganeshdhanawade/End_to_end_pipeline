@@ -1,0 +1,30 @@
+[2024-08-12 09:51:14,318] root - WARNING - No methods selected
+[2024-08-12 09:51:28,406] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-08-12 09:51:28,409] root - INFO - Displayed DataFrame shape: (74, 6)
+[2024-08-12 09:51:28,410] root - INFO - Download button created
+[2024-08-12 09:51:28,412] root - INFO - Data saved successfully
+[2024-08-12 10:44:03,731] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-08-12 10:44:03,734] root - INFO - Displayed DataFrame shape: (74, 6)
+[2024-08-12 10:44:03,735] root - INFO - Download button created
+[2024-08-12 10:44:03,736] root - INFO - Data saved successfully
+[2024-08-12 10:44:17,034] root - INFO - DataCleaner initialized with row_thresh=0.2 and col_thresh=0.2
+[2024-08-12 10:44:17,036] root - INFO - Dropped null values, resulting shape: (74, 6)
+[2024-08-12 10:44:17,036] root - INFO - Float columns: ['res'], Int columns: ['interactive Donar electrons count', 'interactive Acceptore electrons count', 'negative ionizable electrones count', 'positive_ionizable electrons counts']
+[2024-08-12 10:44:17,043] root - INFO - Preprocessor fitted successfully
+[2024-08-12 10:44:17,045] root - INFO - Dropped null values, resulting shape: (74, 6)
+[2024-08-12 10:44:17,048] root - INFO - Float columns: ['res'], Int columns: ['interactive Donar electrons count', 'interactive Acceptore electrons count', 'negative ionizable electrones count', 'positive_ionizable electrons counts']
+[2024-08-12 10:44:17,049] root - INFO - Data transformed successfully
+[2024-08-12 10:48:13,412] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-08-12 10:48:13,415] root - INFO - Displayed DataFrame shape: (27, 6)
+[2024-08-12 10:48:13,416] root - INFO - Download button created
+[2024-08-12 10:48:13,418] root - INFO - Data saved successfully
+[2024-08-12 10:48:34,402] root - INFO - Validation data saved successfully
+[2024-08-12 10:49:05,519] root - INFO - Validation data saved successfully
+[2024-08-12 11:40:22,556] root - INFO - Validation data saved successfully
+[2024-08-12 11:40:44,407] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-08-12 11:40:44,409] root - INFO - Displayed DataFrame shape: (27, 6)
+[2024-08-12 11:40:44,410] root - INFO - Download button created
+[2024-08-12 11:40:44,412] root - INFO - Data saved successfully
+[2024-08-12 11:41:25,963] root - INFO - Validation data saved successfully
+[2024-08-12 11:48:51,138] root - INFO - Validation data saved successfully
+[2024-08-12 11:48:56,774] root - INFO - Validation data saved successfully
