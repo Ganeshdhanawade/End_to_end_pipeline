@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
+#--------------------------Regression-----------------------
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import r2_score, mean_squared_error
@@ -13,6 +14,19 @@ from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn import neighbors
 from lightgbm import LGBMRegressor
 import pickle
+#-------------------------classification-------------------
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from sklearn.model_selection import cross_val_score, KFold
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
+import seaborn as sns
+from sklearn.model_selection import StratifiedKFold
+
+
+#----------------------------- Regression ------------------------------
 
 class Models:
     @staticmethod
@@ -141,3 +155,97 @@ class Models:
     def save_model(model, filename):
         with open(filename, 'wb') as file:
             pickle.dump(model, file)
+
+
+#----------------------------- Classification ------------------------------
+class Models_clf:
+    @staticmethod
+    def all_models(data):
+        """
+        Build and evaluate multiple classification models.
+
+        Args:
+        data (pd.DataFrame): The dataset to use for model building.
+
+        Returns:
+        dict: Evaluation results of the models.
+        dict: Plots of model evaluations.
+        """
+        X = data.drop(columns='target')
+        y = data['target']
+        
+        models = {
+            'DecisionTree': DecisionTreeClassifier(),
+            'XGBoost': XGBClassifier(),
+            'ExtraTrees': ExtraTreesClassifier(),
+            'RandomForest': RandomForestClassifier(),
+            'LGBM': LGBMClassifier(),
+            'KNN': KNeighborsClassifier()
+        }
+
+        results = {}
+        plots = {}
+
+        for model_name, model in models.items():
+            model.fit(X, y)
+            y_pred = model.predict(X)
+            results[model_name] = {
+                'accuracy_train': accuracy_score(y, y_pred),
+                'conf_matrix_train': confusion_matrix(y, y_pred),
+                'class_report_train': classification_report(y, y_pred, output_dict=True)
+            }
+
+            # Plot confusion matrix
+            plt.figure(figsize=(8, 6))
+            sns.heatmap(results[model_name]['conf_matrix_train'], annot=True, cmap="Blues", fmt='d')
+            plt.title(f'Confusion Matrix for {model_name}')
+            plt.xlabel('Predicted')
+            plt.ylabel('Actual')
+            plt.savefig(f"{model_name}_confusion_matrix.png")
+            plots[model_name] = f"{model_name}_confusion_matrix.png"
+        
+        return results, plots
+
+    @staticmethod
+    def cross_validation(model_class, data, n_folds):
+        """
+        Perform Stratified K-Fold cross-validation for a given classification model.
+
+        Args:
+        model_class (class): The classification model class.
+        data (pd.DataFrame): The dataset to use for cross-validation.
+        n_folds (int): Number of folds for cross-validation.
+
+        Returns:
+        tuple: Average accuracy, fold-wise accuracies, and plots for each fold.
+        """
+        X = data.drop(columns='target')
+        y = data['target']
+        
+        skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
+        accuracies = []
+        fold_plots = []
+        
+        for fold, (train_index, test_index) in enumerate(skf.split(X, y)):
+            X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+            y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+            model = model_class()
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+
+            # Plot confusion matrix
+            conf_matrix = confusion_matrix(y_test, y_pred)
+            plt.figure(figsize=(8, 6))
+            sns.heatmap(conf_matrix, annot=True, cmap="Blues", fmt='d')
+            plt.title(f'Confusion Matrix for Fold {fold + 1}')
+            plt.xlabel('Predicted')
+            plt.ylabel('Actual')
+            plt.savefig(f"fold_{fold + 1}_confusion_matrix.png")
+            fold_plots.append(f"fold_{fold + 1}_confusion_matrix.png")
+        
+        avg_accuracy = sum(accuracies) / len(accuracies)
+        return avg_accuracy, accuracies, fold_plots

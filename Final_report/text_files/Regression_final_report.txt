@@ -1,21 +1,8 @@
-descriptors:
- - MolecularDescriptors
-
-fingerprints:
-
-sub-fingerprint:
- - ecfp4
-
-qms:
-
-descriptor_sets:
+Descriptor Methods:
+['MolecularDescriptors', 'Electron_orbital_Zeff', 'MolecularPropertiesCalculator']
 
 Dataset Columns:
- - res
- - interactive Donar electrons count
- - interactive Acceptore electrons count
- - negative ionizable electrones count
- - positive_ionizable electrons counts
+['res', 'interactive Donar electrons count', 'interactive Acceptore electrons count', 'negative ionizable electrones count', 'positive_ionizable electrons counts', 'H_zeff', 'B_zeff', 'C_zeff', 'N_zeff', 'O_zeff', 'Cl_zeff', 'Br_zeff', 'I_zeff', 'F_zeff', 'Na_zeff', 'Mn_zeff', 'S_zeff', 'P_zeff', 'Ca_zeff', 'K_zeff', 'Fe_zeff', 'Co_zeff', 'Cu_zeff', 'Ni_zeff', 'Au_zeff', 'Pt_zeff', 'Si_zeff', 'T(S_e-)_p', 'T(P_e-)_p', 'T(D_e-)_p', 'T(F_e-)_p', 'T(Mo_e-)_p', 'T(Mo_Val_e-)_p', 'mol(R)_p', 'mol(orb_exponent)', 'mol_ms(R)_p', 'mol(susceptibility)_p', 'T_polari(α)_p', 'T_hard(η)_p', 'SphereEnergy']
 
 Selected Model:
- - False
+[XGBoost]

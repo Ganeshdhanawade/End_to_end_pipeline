@@ -30,11 +30,7 @@ FEATURE_SELECTION_DATA_CSV = "feature_selected_data.csv"
 #save the descriptors
 ARTIFACT_FOLDER = "artifact"
 SAVE_DESCRIPTOR_FOLDER = "methods"
-DESCRIPTOR_METHODS = 'selected_descriptor_methods.json'
-FINGERPRINT_METHODS = 'selected_fingerprint_methods.json'
-QM_METHODS = 'selected_qm_methods.json'
-DESCRIPTOR_SET_METHODS = 'selected_descriptor_set_methods.json'
-DESCRIPTOR_SET_SUB_CATE_METHODS = 'selected_descriptor_set_sub_category.json'
+DESCRIPTOR_JESON = 'selected_descriptor_methods.json'
 
 ##picke the final model
 FINAL_MODEL_PICKLE_FOLDER = "models"
@@ -56,3 +52,44 @@ ZIP_REPORT = 'zip_files'
 REPORT_FOLDER = 'Regression_report'
 REGRESSION_FINAL_TEXT = 'Regression_final_report.txt'
 SAVE_REGRESSION_REPORT = 'Regression_report.zip'
+
+
+# ----------------- Classification ------------------ #
+
+# feature calculated dataset
+CALCULATED_FEATURE_DATA = "feature_calculated_data"
+FEATURE_CALCULATED_DATA_CSV_CLF = "feature_calulated_data_classification.csv"
+
+# clean dataset
+CLEAN_DATA = "clean_data"
+CLEAN_DATA_CSV_CLF = "clean_dataset_classification.csv"
+
+# feature selection dataset
+FEATURE_SELECTION = "feature_selection"
+FEATURE_SELECTION_DATA_CSV_CLF = "feature_selected_data_classification.csv"
+
+#save the descriptors
+ARTIFACT_FOLDER = "artifact"
+SAVE_DESCRIPTOR_FOLDER = "methods"
+DESCRIPTOR_JESON_CLF = 'selected_descriptor_methods_classification.json'
+
+##picke the final model
+FINAL_MODEL_PICKLE_FOLDER = "models"
+PICKLE_FILE_NAME_CLF = "final_model_classification.pkl"
+
+###validation dataset
+VALIDATION_DATA_FOLDER="validation_data"
+FINAL_VALIDATION_FOLDER = "final_validation"
+VALIDATION_DATA_CSV_CLF="validation_final_classification.csv"
+
+### validation - after droping dulicate smiles save
+DUPLICATED_CLEAN_VAL_FOLDER = "Duplicated_clean"
+DUPLICATED_CLEAN_VAL_CSV_CLF= "duplicated_clean_val_classification.csv"
+
+## validation - save final model
+FINAL_MODEL_FOLDER = "Final_report"
+TEXT_REPORT_CLF = 'text_files_classification'
+ZIP_REPORT_CLF = 'zip_files_classification'
+REPORT_FOLDER_CLF = 'Classification_report'
+REGRESSION_FINAL_TEXT_CLF = 'Classification_final_report.txt'
+SAVE_REGRESSION_REPORT_CLF = 'Classification_report.zip'

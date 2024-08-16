@@ -28,6 +28,7 @@ from src.package.descriptor_names import descriptor_methods, fingerprint_methods
 
 #------------------------------------------------------------------------
 # Initialize session state - feature selection
+
 if 'df' not in st.session_state:
     st.session_state['df'] = None
 
@@ -38,30 +39,27 @@ if 'feature_selection_done' not in st.session_state:
 if 'df1' not in st.session_state:
     st.session_state['df1'] = None
 
-if 'data_saved' not in st.session_state:
-    st.session_state['data_saved'] = False
-
 if 'selected_descriptor_methods' not in st.session_state:
-    st.session_state['selected_descriptor_methods'] = load_selected_methods(DESCRIPTOR_METHODS_FILE_PATH)
+    st.session_state['selected_descriptor_methods'] = []
 
 if 'selected_fingerprint_methods' not in st.session_state:
-    st.session_state['selected_fingerprint_methods'] = load_selected_methods(FINGERPRINT_METHODS_FILE_PATH)
+    st.session_state['selected_fingerprint_methods'] = []
 
 if 'selected_qm_methods' not in st.session_state:
-    st.session_state['selected_qm_methods'] = load_selected_methods(QM_METHODS_FILE_PATH)
+    st.session_state['selected_qm_methods'] = []
 
 if 'selected_descriptor_set_methods' not in st.session_state:
-    st.session_state['selected_descriptor_set_methods'] = load_selected_methods(DESCRIPTOR_SET_METHODS_FILE_PATH)
+    st.session_state['selected_descriptor_set_methods'] = []
+
+if 'data_final' not in st.session_state:
+    st.session_state['data_final'] = pd.DataFrame()
+
+if 'data_saved' not in st.session_state:
+    st.session_state['data_saved'] = False
 
 if 'selected_fingerprint_types' not in st.session_state:
     st.session_state['selected_fingerprint_types'] = []
 
-if 'data_final' not in st.session_state:
-    st.session_state['data_final'] = False
-
-## save the model name
-if 'model_save' not in st.session_state:
-    st.session_state['model_save'] = False
 
 #-----------------------------------------------------------------------
 ### page navigations
@@ -70,7 +68,6 @@ nav = st.sidebar.radio("End-to-end pipeline",["Feature calculation","Data cleani
 #-----------------------------------------------------------------------
 if nav == "Feature calculation":
 
-    # Placeholder for the selected methods (these should come from your Streamlit sidebar selections)
     selected_descriptor_methods = st.sidebar.multiselect("Select Descriptor Methods", options=list(descriptor_methods.keys()))
     selected_fingerprint_methods = st.sidebar.multiselect("Select Fingerprint Methods", options=list(fingerprint_methods.keys()))
     selected_qm_methods = st.sidebar.multiselect("Select QM Methods", options=list(qm_methods.keys()))
@@ -83,7 +80,6 @@ if nav == "Feature calculation":
         'laval', 'rdk5', 'rdk6', 'rdk7'
     ]
 
-    # Add a condition to show the list of fingerprints if "FingerprintCalculator" is selected
     if "FingerprintCalculator" in selected_fingerprint_methods:
         selected_fingerprint_types = st.sidebar.multiselect("Select Fingerprint Types", options=fp_names)
     else:
@@ -102,20 +98,13 @@ if nav == "Feature calculation":
                     st.warning("Please select at least one method.")
                     logging.warning("No methods selected")
                 else:
-                    # Save selected methods to files
-                    save_selected_methods(selected_descriptor_methods, DESCRIPTOR_METHODS_FILE_PATH)
-                    save_selected_methods(selected_fingerprint_methods, FINGERPRINT_METHODS_FILE_PATH)
-                    save_selected_methods(selected_qm_methods, QM_METHODS_FILE_PATH)
-                    save_selected_methods(selected_descriptor_set_methods, DESCRIPTOR_SET_METHODS_FILE_PATH)
+                    save_selected_methods_to_json(
+                        selected_descriptor_methods,
+                        selected_fingerprint_methods,
+                        selected_fingerprint_types,
+                        DESCRIPTOR_METHODS_JESON_PATH
+                    )
 
-                    # Save selected fingerprint types if FingerprintCalculator is selected
-                    if "FingerprintCalculator" in selected_fingerprint_methods:
-                        st.session_state['selected_fingerprint_types'] = selected_fingerprint_types
-                        save_selected_methods(selected_fingerprint_types, FINGERPRINT_TYPES_SUB_CATEGORY_PATH)
-                    else:
-                        st.session_state['selected_fingerprint_types'] = []
-
-                    # Process selected methods
                     for method_name in selected_descriptor_methods:
                         try:
                             st.write(f"Running {method_name}...")
@@ -129,13 +118,9 @@ if nav == "Feature calculation":
                     for method_name in selected_fingerprint_methods:
                         try:
                             st.write(f"Running {method_name}...")
-                            if method_name == "FingerprintCalculator":
-                                if selected_fingerprint_types:
-                                    df = fingerprint_methods[method_name](df, selected_fingerprint_types)
-                                    logging.info(f"Ran FingerprintCalculator with types {selected_fingerprint_types}")
-                                else:
-                                    st.warning("Please select at least one fingerprint type for FingerprintCalculator.")
-                                    logging.warning("No fingerprint types selected for FingerprintCalculator")
+                            if method_name == "FingerprintCalculator" and selected_fingerprint_types:
+                                df = fingerprint_methods[method_name](df, selected_fingerprint_types)
+                                logging.info(f"Ran FingerprintCalculator with types {selected_fingerprint_types}")
                             else:
                                 df = fingerprint_methods[method_name](df)
                                 logging.info(f"Ran fingerprint method {method_name}")
@@ -167,16 +152,13 @@ if nav == "Feature calculation":
                     st.write("Resulting DataFrame:")
                     st.write(df.head())
              
-                    # -------------Create columns for buttons--------------
                     col1, col2, col3 = st.columns([2, 1, 1])
 
                     with col1:
-                        # Display the shape of the resulting DataFrame
                         col1.markdown(f"**DataFrame Shape:** {df.shape}")
                         logging.info(f"Displayed DataFrame shape: {df.shape}")
 
                     with col3:
-                        # Button to download dataset
                         csv = df.to_csv(index=False)
                         st.download_button(
                             label="Download Data",
@@ -186,7 +168,6 @@ if nav == "Feature calculation":
                         )
                         logging.info("Download button created")
 
-                    # Save the dataset
                     save_data(df, FEATURE_CALCULATED_DATA_PATH)
                     st.session_state['data_saved'] = True
                     st.success("Data saved successfully!")
@@ -489,10 +470,7 @@ if nav == "Model building":
 
 #-----------------------------------------------------------------------------
 if nav == "Data validation":
-    
-    # Assume the methods load_data, descriptor_methods, fingerprint_methods, qm_methods, descriptor_set_methods, and save_data are defined elsewhere
 
-    # File uploader
     uploaded_file = st.file_uploader("Upload your dataset")
 
     if uploaded_file is not None:
@@ -507,14 +485,17 @@ if nav == "Data validation":
                 st.session_state['run_calculations'] = False
 
             if st.button("Run Selected Calculations"):
-                if not st.session_state['selected_descriptor_methods'] and not st.session_state['selected_fingerprint_methods'] and not st.session_state['selected_qm_methods'] and not st.session_state['selected_descriptor_set_methods']:
+                # Load selected methods from JSON file
+                selected_methods = load_selected_methods_from_json(DESCRIPTOR_METHODS_JESON_PATH)
+
+                if not (selected_methods.get('descriptor_methods') or selected_methods.get('fingerprint_methods') or selected_methods.get('qm_methods') or selected_methods.get('descriptor_set_methods')):
                     st.warning("Please select at least one method.")
                     logging.warning("No methods selected")
                 else:
                     df = st.session_state['df1']
 
                     # Process selected descriptor methods
-                    for method_name in st.session_state['selected_descriptor_methods']:
+                    for method_name in selected_methods.get('descriptor_methods', []):
                         try:
                             st.write(f"Running {method_name}...")
                             df = descriptor_methods[method_name](df)
@@ -525,17 +506,16 @@ if nav == "Data validation":
                             logging.error(f"Error running descriptor method {method_name}: {error_message}")
 
                     # Process selected fingerprint methods
-                    for method_name in st.session_state['selected_fingerprint_methods']:
+                    for method_name in selected_methods.get('fingerprint_methods', []):
                         try:
                             st.write(f"Running {method_name}...")
                             if method_name == "FingerprintCalculator":
-                                if st.session_state['selected_fingerprint_types']:
-                                    df = fingerprint_methods[method_name](df, st.session_state['selected_fingerprint_types'])
-                                    logging.info(f"Ran FingerprintCalculator with types {st.session_state['selected_fingerprint_types']}")
+                                if selected_methods.get('fingerprint_types'):
+                                    df = fingerprint_methods[method_name](df, selected_methods['fingerprint_types'])
+                                    logging.info(f"Ran FingerprintCalculator with types {selected_methods['fingerprint_types']}")
                                 else:
-                                    pass
-                                    #st.warning("Please select at least one fingerprint type for FingerprintCalculator.")
-                                    #logging.warning("No fingerprint types selected for FingerprintCalculator")
+                                    st.warning("Please select at least one fingerprint type for FingerprintCalculator.")
+                                    logging.warning("No fingerprint types selected for FingerprintCalculator")
                             else:
                                 df = fingerprint_methods[method_name](df)
                                 logging.info(f"Ran fingerprint method {method_name}")
@@ -545,7 +525,7 @@ if nav == "Data validation":
                             logging.error(f"Error running fingerprint method {method_name}: {error_message}")
 
                     # Process selected QM methods
-                    for method_name in st.session_state['selected_qm_methods']:
+                    for method_name in selected_methods.get('qm_methods', []):
                         try:
                             st.write(f"Running {method_name}...")
                             df = qm_methods[method_name](df)
@@ -556,7 +536,7 @@ if nav == "Data validation":
                             logging.error(f"Error running QM method {method_name}: {error_message}")
 
                     # Process selected descriptor set methods
-                    for method_name in st.session_state['selected_descriptor_set_methods']:
+                    for method_name in selected_methods.get('descriptor_set_methods', []):
                         try:
                             st.write(f"Running {method_name}...")
                             df = descriptor_set_methods[method_name](df)
@@ -662,7 +642,7 @@ if nav == "Data validation":
                 if st.button("Save Data"):
                     if dataset_option == 'clean dataset':
                         data1 = load_data(DATA_CLEANING_PATH)
-                        data =data1.iloc[:,1:]
+                        data = data1.iloc[:,1:]
                     elif dataset_option == 'feature selection dataset':
                         data = load_data(FEATURE_SELECTION_DATA_PATH)
 
@@ -683,25 +663,30 @@ if nav == "Data validation":
 
             with tab23:
                 def plot_predictions(y_true, y_pred):
+                    import matplotlib.pyplot as plt
+                    import seaborn as sns
+
                     plt.figure(figsize=(10, 6))
-                    plt.scatter(y_true, y_pred, alpha=0.6, color='b')
-                    plt.plot([min(y_true), max(y_true)], [min(y_true), max(y_true)], color='r', linestyle='--', linewidth=2)
+                    sns.scatterplot(x=y_true, y=y_pred, color='blue')
                     plt.xlabel('Actual Values')
                     plt.ylabel('Predicted Values')
                     plt.title('Actual vs Predicted Values')
+                    plt.plot([y_true.min(), y_true.max()], [y_true.min(), y_true.max()], color='red', linestyle='--')
                     st.pyplot(plt)
-                
-                def predict_and_evaluate(model, data_clean):
-                    X = data_clean.drop(columns=['res'])  # Assuming 'res' is the column to predict
-                    y_true = data_clean['res']
+
+                def predict_and_evaluate(model, data):
+                    from sklearn.metrics import mean_squared_error, r2_score
+                    import numpy as np
+
+                    X = data.drop('res', axis=1)  # Ensure 'target' column is excluded
+                    y_true = data['res']
                     y_pred = model.predict(X)
-                    rmse = mean_squared_error(y_true, y_pred, squared=False)
-                    r2 = r2_score(y_true, y_pred)    
+                    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+                    r2 = r2_score(y_true, y_pred)
                     return y_true, y_pred, rmse, r2
                 
                 st.write("Are you interested in validating the model?")
 
-                # Load data and model
                 model = pickle.load(open(FINAL_MODEL_PICKLE_PATH, 'rb'))
                 data_clean = load_data(VALIDATION_DATA_PATH)
 
@@ -718,25 +703,20 @@ if nav == "Data validation":
                     plot_predictions(y_true, y_pred)
 
             with tab24:
-
                 # Define paths to your saved files
                 file_paths = {
-                    "descriptors": DESCRIPTOR_METHODS_FILE_PATH,
-                    "fingerprints": FINGERPRINT_METHODS_FILE_PATH,
-                    "sub-fingerprint": FINGERPRINT_TYPES_SUB_CATEGORY_PATH, 
-                    "qms": QM_METHODS_FILE_PATH,
-                    "descriptor_sets": DESCRIPTOR_SET_METHODS_FILE_PATH
+                    "methods": DESCRIPTOR_METHODS_JESON_PATH  # Updated to use the single JSON file
                 }
 
                 # Load methods into a dictionary
-                all_selected_methods = load_methods(file_paths)
+                all_selected_methods = load_selected_methods_from_json(file_paths['methods'])
 
                 # Extract column names from the loaded dataset
                 clean_data = load_data(VALIDATION_DATA_PATH)
                 column_names = clean_data.columns.tolist()
 
                 # Select model name
-                model_name_to_save = st.session_state['model_save']
+                model_name_to_save = st.session_state.get('model_save', 'default_model')
 
                 # Create necessary directories if they don't exist
                 os.makedirs(os.path.dirname(REGRESSION_TEXT_PATH), exist_ok=True)
@@ -746,7 +726,7 @@ if nav == "Data validation":
                 # Save methods, column names, and model name to text file
                 save_to_txt(REGRESSION_TEXT_PATH, all_selected_methods, column_names, model_name_to_save)
                 
-                ## copy the pickle file
+                # Copy the pickle file
                 existing_pickle_target_path = os.path.join(REGRESSION_MODEL_FOLDER, os.path.basename(FINAL_MODEL_PICKLE_PATH))
                 if os.path.exists(FINAL_MODEL_PICKLE_PATH):
                     shutil.copy(FINAL_MODEL_PICKLE_PATH, existing_pickle_target_path)
@@ -770,30 +750,3 @@ if nav == "Data validation":
                             file_name="output_files.zip",
                             mime="application/zip"
                         )
-
-                    # st.write('Are you intersted to save that final model with information?')
-                    # if st.button("Save final model"):
-                    #     st.write('model save')
-
-
-
-
-                # # Create columns for buttons
-                # col1, col2, col3 = st.columns([2, 1, 1])
-
-                # with col1:
-                #     # Display the shape of the resulting DataFrame
-                #     col1.markdown(f"**DataFrame Shape:** {df.shape}")
-                #     logging.info(f"Displayed DataFrame shape: {df.shape}")
-
-                # with col3:
-                #     # Button to download dataset
-                #     csv = df.to_csv(index=False)
-                #     st.download_button(
-                #         label="Download Data",
-                #         data=csv,
-                #         file_name="processed_data.csv",
-                #         mime="text/csv"
-                #     )
-                #     logging.info("Download button created")
-

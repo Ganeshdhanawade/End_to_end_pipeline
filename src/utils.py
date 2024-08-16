@@ -3,11 +3,15 @@ import json
 import pickle
 import zipfile
 import numpy as np
+import seaborn as sns
 import pandas as pd
+from src.logger import logging
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 import matplotlib.pyplot as plt
+
+# -------------------------------- Regression ---------------------------------
 
 #-------------------------------------------------------
 # Button to save the cleaned dataset
@@ -92,9 +96,8 @@ def plot_correlation_heatmap(data, title):
 
 
 #-----------------------------------------------------------------------
-# Saving the final model - validation navigation
-# Define functions
-# Utility Functions
+## validation -save text file
+
 def load_methods(file_paths):
     """Load methods from given file paths into lists."""
     methods = {}
@@ -109,19 +112,45 @@ def load_methods(file_paths):
 def save_to_txt(file_path, data, column_names, model_name):
     """Save dictionary data, column names, and model name to a text file."""
     with open(file_path, 'w') as file:
-        # Write methods data
-        for category, methods in data.items():
-            file.write(f"{category}:\n")
-            for method in methods:
-                file.write(f" - {method}\n")
+        # Descriptor Methods Section
+        if data.get("descriptor_methods"):
+            file.write("Descriptor Methods:\n")
+            file.write(f"{data['descriptor_methods']}\n")
+            file.write("\n")
+        
+        # Fingerprint Methods Section
+        if data.get("fingerprint_methods"):
+            file.write("Fingerprint Methods:\n")
+            file.write(f"{data['fingerprint_methods']}\n")
             file.write("\n")
 
-        # Write column names
-        file.write("Dataset Columns:\n")
-        file.write(f"{list(names for names in column_names)}\n")
+        # Fingerprint Types Section
+        if data.get("fingerprint_types"):
+            file.write("Fingerprint Types:\n")
+            file.write(f"{data['fingerprint_types']}\n")
+            file.write("\n")
         
-        # Write selected model name
-        file.write(f"\nSelected Model:\n - {model_name}\n")
+        # QM Methods Section
+        if data.get("qm_methods"):
+            file.write("QM Methods:\n")
+            file.write(f"{data['qm_methods']}\n")
+            file.write("\n")
+        
+        # Descriptor Set Methods Section
+        if data.get("descriptor_set_methods"):
+            file.write("Descriptor Set Methods:\n")
+            file.write(f"{data['descriptor_set_methods']}\n")
+            file.write("\n")
+        
+        # Write column names as a list
+        file.write("Dataset Columns:\n")
+        file.write(f"{column_names}\n")
+        file.write("\n")
+        
+        # Write selected model name as a list
+        file.write("Selected Model:\n")
+        file.write(f"[{model_name}]\n")
+
 
 def zip_folder(folder_path, zip_path):
     """Zip the contents of a folder."""
@@ -131,52 +160,63 @@ def zip_folder(folder_path, zip_path):
                 file_path = os.path.join(root, file)
                 zipf.write(file_path, os.path.relpath(file_path, folder_path))
 
+#-----------------------------------------------------
+# this is the code for feature selection
+
+def save_selected_methods_to_json(descriptor_methods, fingerprint_methods, sub_fingerprint_methods, file_path):
+    data = {}
+
+    if descriptor_methods:
+        data['descriptor'] = descriptor_methods
+
+    if fingerprint_methods:
+        data['fingerprint'] = {
+            "methods": fingerprint_methods
+        }
+        if "FingerprintCalculator" in fingerprint_methods:
+            data['fingerprint']['sub-category'] = sub_fingerprint_methods
+
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+        logging.info(f"Selected methods saved to {file_path}")
 
 
-# def save_to_txt(file_path, data, column_names=None, model_name=None):
-#     """Save dictionary data, column names, and model name to a text file."""
-#     with open(file_path, 'w') as file:
-#         # Write model name and column names if provided
-#         if model_name:
-#             file.write(f"Model: {model_name}\n\n")
-#         if column_names:
-#             file.write(f"Columns: {', '.join(column_names)}\n\n")
 
-#         # Write methods data
-#         for category, methods in data.items():
-#             # Only write the category if there are methods present
-#             if methods:
-#                 file.write(f"{category}:\n")
-#                 for method in methods:
-#                     file.write(f" - {method}\n")
-#                 file.write("\n")
-
-# # Example of the data structure you might have
-# data = {
-#     "descriptors": ["DescriptorMethod1", "DescriptorMethod2"],
-#     "fingerprints": ["FingerprintCalculator", "AnotherFingerprintMethod"],
-#     "qms": ["QMMethod1", "QMMethod2"],
-#     "descriptor_sets": []  # No methods here, so it won't be written
-# }
-
-# file_paths = {
-#     "descriptors": "descriptors.txt",
-#     "fingerprints": "fingerprints.txt",
-#     "sub-fingerprint": "sub_fingerprint.txt", 
-#     "qms": "qms.txt",
-#     "descriptor_sets": "descriptor_sets.txt"
-# }
-
-# # Save the main categories to their respective files
-# for category, path in file_paths.items():
-#     # Skip sub-fingerprint initially
-#     if category == "sub-fingerprint":
-#         continue
+def load_selected_methods_from_json(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    else:
+        logging.warning(f"File {file_path} does not exist.")
+        return {}
     
-#     # Only save if there is data for that category
-#     if category in data and data[category]:
-#         save_to_txt(path, {category: data[category]})
 
-# # Handle sub-fingerprint only if FingerprintCalculator is present
-# if 'FingerprintCalculator' in data.get('fingerprints', []):
-#     save_to_txt(file_paths["sub-fingerprint"], {"sub-fingerprint": data.get("sub-fingerprint", [])})
+#---------------------------------------------
+# model validation - add validation saving descriptors
+
+def load_selected_methods_from_json(file_path):
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    
+    selected_methods = {
+        'descriptor_methods': data.get('descriptor', []),
+        'fingerprint_methods': data.get('fingerprint', {}).get('methods', []),
+        'fingerprint_types': data.get('fingerprint', {}).get('sub-category', []),
+        'qm_methods': [],  # Assuming no data for 'qm_methods' in this example
+        'descriptor_set_methods': []  # Assuming no data for 'descriptor_set_methods' in this example
+    }
+    
+    return selected_methods
+
+
+# ----------------------------------- Classification ------------------------------------
+
+
+def plot_confusion_matrix(cm, model_name):
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, cmap="Blues", fmt='d')
+    plt.title(f'Confusion Matrix for {model_name}')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.savefig(f"{model_name}_confusion_matrix.png")
+    return f"{model_name}_confusion_matrix.png"

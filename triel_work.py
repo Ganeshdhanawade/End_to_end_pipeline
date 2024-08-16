@@ -344,3 +344,105 @@
                         
     #                     st.markdown("<h4 style='text-align: center;'>Actual vs Predicted Plot</h4>", unsafe_allow_html=True)
     #                     plot_predictions(y_true, y_pred)
+
+
+
+ # # File uploader
+    # uploaded_file = st.file_uploader("Upload your dataset")
+
+    # if uploaded_file is not None:
+    #     st.session_state['df1'] = load_data(uploaded_file)
+        
+    #     if st.session_state['df1'] is not None:
+    #         st.write("Uploaded DataFrame:")
+    #         st.write(st.session_state['df1'].head())
+
+    #         # Manage the button state to avoid multiple runs
+    #         if 'run_calculations' not in st.session_state:
+    #             st.session_state['run_calculations'] = False
+
+    #         if st.button("Run Selected Calculations"):
+    #             if not st.session_state['selected_descriptor_methods'] and not st.session_state['selected_fingerprint_methods'] and not st.session_state['selected_qm_methods'] and not st.session_state['selected_descriptor_set_methods']:
+    #                 st.warning("Please select at least one method.")
+    #                 logging.warning("No methods selected")
+    #             else:
+    #                 df = st.session_state['df1']
+
+    #                 # Process selected descriptor methods
+    #                 for method_name in st.session_state['selected_descriptor_methods']:
+    #                     try:
+    #                         st.write(f"Running {method_name}...")
+    #                         df = descriptor_methods[method_name](df)
+    #                         logging.info(f"Ran descriptor method {method_name}")
+    #                     except Exception as e:
+    #                         error_message = CustomException(e)
+    #                         st.error(f"Error running {method_name}: {error_message}")
+    #                         logging.error(f"Error running descriptor method {method_name}: {error_message}")
+
+    #                 # Process selected fingerprint methods
+    #                 for method_name in st.session_state['selected_fingerprint_methods']:
+    #                     try:
+    #                         st.write(f"Running {method_name}...")
+    #                         if method_name == "FingerprintCalculator":
+    #                             if st.session_state['selected_fingerprint_types']:
+    #                                 df = fingerprint_methods[method_name](df, st.session_state['selected_fingerprint_types'])
+    #                                 logging.info(f"Ran FingerprintCalculator with types {st.session_state['selected_fingerprint_types']}")
+    #                             else:
+    #                                 st.warning("Please select at least one fingerprint type for FingerprintCalculator.")
+    #                                 logging.warning("No fingerprint types selected for FingerprintCalculator")
+    #                         else:
+    #                             df = fingerprint_methods[method_name](df)
+    #                             logging.info(f"Ran fingerprint method {method_name}")
+    #                     except Exception as e:
+    #                         error_message = CustomException(e)
+    #                         st.error(f"Error running {method_name}: {error_message}")
+    #                         logging.error(f"Error running fingerprint method {method_name}: {error_message}")
+
+    #                 # Process selected QM methods
+    #                 for method_name in st.session_state['selected_qm_methods']:
+    #                     try:
+    #                         st.write(f"Running {method_name}...")
+    #                         df = qm_methods[method_name](df)
+    #                         logging.info(f"Ran QM method {method_name}")
+    #                     except Exception as e:
+    #                         error_message = CustomException(e)
+    #                         st.error(f"Error running {method_name}: {error_message}")
+    #                         logging.error(f"Error running QM method {method_name}: {error_message}")
+
+    #                 # Process selected descriptor set methods
+    #                 for method_name in st.session_state['selected_descriptor_set_methods']:
+    #                     try:
+    #                         st.write(f"Running {method_name}...")
+    #                         df = descriptor_set_methods[method_name](df)
+    #                         logging.info(f"Ran descriptor set method {method_name}")
+    #                     except Exception as e:
+    #                         error_message = CustomException(e)
+    #                         st.error(f"Error running {method_name}: {error_message}")
+    #                         logging.error(f"Error running descriptor set method {method_name}: {error_message}")
+
+    #                 st.write("Resulting DataFrame:")
+    #                 st.write(df.head())
+    #                 st.session_state['data_final'] = df
+
+    #                 # Create columns for buttons
+    #                 col1, col2, col3 = st.columns([2, 1, 1])
+
+    #                 with col1:
+    #                     col1.markdown(f"**DataFrame Shape:** {df.shape}")
+    #                     logging.info(f"Displayed DataFrame shape: {df.shape}")
+
+    #                 with col3:
+    #                     csv = df.to_csv(index=False)
+    #                     st.download_button(
+    #                         label="Download Data",
+    #                         data=csv,
+    #                         file_name="processed_data.csv",
+    #                         mime="text/csv"
+    #                     )
+    #                     logging.info("Download button created")
+
+    #                 # Save the dataset
+    #                 save_data(df, FEATURE_CALCULATED_DATA_PATH)
+    #                 st.session_state['data_saved'] = True
+    #                 st.success("Data saved successfully!")
+    #                 logging.info("Data saved successfully")
