@@ -1,7 +1,6 @@
 {
     "descriptor": [
-        "MolecularDescriptors",
-        "Electron_orbital_Zeff",
-        "NitrogenRuleCalculator1"
+        "NitrogenRuleCalculator1",
+        "MolecularDescriptors"
     ]
 }

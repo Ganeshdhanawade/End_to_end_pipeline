@@ -1,0 +1,40 @@
+[2024-09-09 11:04:57,914] root - INFO - Selected methods saved to /home/ganesh/End_to_end_pipeline/artifact/methods/selected_descriptor_methods.json
+[2024-09-09 11:05:10,496] root - ERROR - Error running descriptor method NitrogenRuleCalculator1: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [114]
+        and exception block line number : [111]
+        error message : [No registered converter was able to produce a C++ rvalue of type std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > from this Python object of type float]
+        
+[2024-09-09 12:18:19,553] root - INFO - Selected methods saved to /home/ganesh/End_to_end_pipeline/artifact/methods/selected_descriptor_methods.json
+[2024-09-09 12:18:32,235] root - ERROR - Error running descriptor method NitrogenRuleCalculator1: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [114]
+        and exception block line number : [111]
+        error message : [No registered converter was able to produce a C++ rvalue of type std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > from this Python object of type float]
+        
+[2024-09-09 12:19:19,548] root - INFO - Ran descriptor method MolecularDescriptors
+[2024-09-09 12:19:20,721] root - ERROR - Error running descriptor method MolecularPropertiesCalculator: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [114]
+        and exception block line number : [111]
+        error message : ['float' object is not iterable]
+        
+[2024-09-09 12:19:32,381] root - ERROR - Error running descriptor method Electron_orbital_Zeff: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [114]
+        and exception block line number : [111]
+        error message : [No registered converter was able to produce a C++ rvalue of type std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > from this Python object of type float]
+        
+[2024-09-09 12:19:37,192] root - ERROR - Error running descriptor method Mol_Descriptor: 
+        Error occurred in execution of :
+        [/home/ganesh/End_to_end_pipeline/pages/Regression.py] at
+        try block line number : [114]
+        and exception block line number : [111]
+        error message : [No registered converter was able to produce a C++ rvalue of type std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > from this Python object of type float]
+        
+[2024-09-09 12:19:46,457] root - INFO - Ran FingerprintCalculator with types ['ecfp4']
+[2024-09-09 12:27:46,196] root - INFO - Ran descriptor method DIPOL_RI

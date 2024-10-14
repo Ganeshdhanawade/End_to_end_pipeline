@@ -1,7 +1,17 @@
 {
     "descriptor": [
+        "NitrogenRuleCalculator1",
         "MolecularDescriptors",
+        "MolecularPropertiesCalculator",
         "Electron_orbital_Zeff",
-        "MolecularPropertiesCalculator"
-    ]
+        "Mol_Descriptor"
+    ],
+    "fingerprint": {
+        "methods": [
+            "FingerprintCalculator"
+        ],
+        "sub-category": [
+            "ecfp4"
+        ]
+    }
 }

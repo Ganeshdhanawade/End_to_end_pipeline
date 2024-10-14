@@ -171,8 +171,8 @@ class Models_clf:
         dict: Evaluation results of the models.
         dict: Plots of model evaluations.
         """
-        X = data.drop(columns='target')
-        y = data['target']
+        X = data.drop(columns='res')
+        y = data['res']
         
         models = {
             'DecisionTree': DecisionTreeClassifier(),
@@ -219,8 +219,8 @@ class Models_clf:
         Returns:
         tuple: Average accuracy, fold-wise accuracies, and plots for each fold.
         """
-        X = data.drop(columns='target')
-        y = data['target']
+        X = data.drop(columns='res')
+        y = data['res']
         
         skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
         accuracies = []

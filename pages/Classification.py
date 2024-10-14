@@ -247,6 +247,8 @@ if nav == "Data cleaning":
 
 
 #------------------------------------------------------------------------------
+from sklearn.preprocessing import MinMaxScaler
+
 if nav == "Feature selection":
 
     st.title("Feature Selection Dashboard")
@@ -291,43 +293,31 @@ if nav == "Feature selection":
             st.write(f"Selected Correlated Features: {corr_features}")
             st.write(f"Shape Correlated Features: {len(corr_features)}")
 
-            # One-Hot Encoding for Categorical Variables
-            X_encoded = pd.get_dummies(X, drop_first=True)
-
-            # Chi-Square Test
-            chi2_scores, p_values = chi2(X_encoded, y)
-            chi2_scores_df = pd.DataFrame({
-                'Feature': X_encoded.columns,
-                'Chi2 Score': chi2_scores
-            }).sort_values(by='Chi2 Score', ascending=False).head(top_features)
-            
             # Mutual Information
-            mi_scores = mutual_info_classif(X_encoded, y)
+            mi_scores = mutual_info_classif(X, y)
             mi_scores_df = pd.DataFrame({
-                'Feature': X_encoded.columns,
+                'Feature': X.columns,
                 'MI Score': mi_scores
             }).sort_values(by='MI Score', ascending=False).head(top_features)
             
             # ExtraTreesClassifier Feature Importance
             model = ExtraTreesClassifier()
-            model.fit(X_encoded, y)
+            model.fit(X, y)
             importances = model.feature_importances_
             extra_trees_df = pd.DataFrame({
-                'Feature': X_encoded.columns,
+                'Feature': X.columns,
                 'Importance': importances
             }).sort_values(by='Importance', ascending=False).head(top_features)
             
             # RandomForestClassifier Feature Importance
             model_rf = RandomForestClassifier()
-            model_rf.fit(X_encoded, y)
+            model_rf.fit(X, y)
             importances_rf = model_rf.feature_importances_
             random_forest_df = pd.DataFrame({
-                'Feature': X_encoded.columns,
+                'Feature': X.columns,
                 'Importance': importances_rf
             }).sort_values(by='Importance', ascending=False).head(top_features)
 
-            # Plot for Chi-Square Test
-            plot_horizontal_bar(chi2_scores_df, 'Feature', 'Chi2 Score', 'Top Features by Chi-Square Test') 
             # Plot for Mutual Information
             plot_horizontal_bar(mi_scores_df, 'Feature', 'MI Score', 'Top Features by Mutual Information')
             # Plot for Extra Trees
@@ -337,7 +327,6 @@ if nav == "Feature selection":
 
             # Create heatmap for feature importance
             heatmap_data = pd.DataFrame({
-                'Chi-Square': chi2_scores_df.set_index('Feature')['Chi2 Score'],
                 'Mutual Information': mi_scores_df.set_index('Feature')['MI Score'],
                 'Extra Trees': extra_trees_df.set_index('Feature')['Importance'],
                 'Random Forest': random_forest_df.set_index('Feature')['Importance']
@@ -368,6 +357,130 @@ if nav == "Feature selection":
         if st.session_state['feature_selection_done']:
             # Display results
             st.write("### Feature Selection Completed")
+
+
+
+# if nav == "Feature selection":
+
+#     st.title("Feature Selection Dashboard")
+
+#     # Data uploader
+#     st.write("Are you selecting the important features in clean data?")
+
+#     if st.button('Import Data'):
+#         st.session_state['df'] = load_data(DATA_CLEANING_PATH_CLF)
+#         st.session_state['df'].drop(columns=['SMILES'], inplace=True)
+
+#     # Check if dataset is loaded and display it
+#     if st.session_state['df'] is not None:
+#         df = st.session_state['df']
+        
+#         # Display the dataframe
+#         st.write("### Data Overview")
+#         st.write(df.head())
+        
+#         # Select the response variable
+#         response_var = st.selectbox("Select the response variable", df.columns)
+        
+#         # Select the feature selection methods
+#         st.sidebar.header("Feature Selection Settings")
+#         corr_threshold = st.sidebar.slider("Correlation Threshold", 0.0, 1.0, 0.5)
+#         multicoll_threshold = st.sidebar.slider("Multicollinearity Threshold", 0.0, 1.0, 0.9)
+#         top_features = st.sidebar.slider("Number of Top Features", 1, 50, 20)
+
+#         if st.button("Run Feature Selection"):
+#             st.session_state['feature_selection_done'] = True
+#             st.session_state['response_var'] = response_var
+
+#             # Feature selection process
+#             fs = FeatureSelector(corr_threshold=corr_threshold, multicoll_threshold=multicoll_threshold, top_features=top_features)
+#             response_var = st.session_state['response_var']
+#             X = df.drop(columns=[response_var])
+#             y = df[response_var]
+
+#             # Feature Selection for Categorical (Binary) Response Variable
+#             st.write("### Selecting Correlated Features")
+#             corr_features = fs.select_corr_features(X, y)
+#             st.write(f"Selected Correlated Features: {corr_features}")
+#             st.write(f"Shape Correlated Features: {len(corr_features)}")
+
+#             # One-Hot Encoding for Categorical Variables
+#             X_encoded = pd.get_dummies(X, drop_first=True)
+
+#             # Chi-Square Test
+#             chi2_scores, p_values = chi2(X_encoded, y)
+#             chi2_scores_df = pd.DataFrame({
+#                 'Feature': X_encoded.columns,
+#                 'Chi2 Score': chi2_scores
+#             }).sort_values(by='Chi2 Score', ascending=False).head(top_features)
+            
+#             # Mutual Information
+#             mi_scores = mutual_info_classif(X_encoded, y)
+#             mi_scores_df = pd.DataFrame({
+#                 'Feature': X_encoded.columns,
+#                 'MI Score': mi_scores
+#             }).sort_values(by='MI Score', ascending=False).head(top_features)
+            
+#             # ExtraTreesClassifier Feature Importance
+#             model = ExtraTreesClassifier()
+#             model.fit(X_encoded, y)
+#             importances = model.feature_importances_
+#             extra_trees_df = pd.DataFrame({
+#                 'Feature': X_encoded.columns,
+#                 'Importance': importances
+#             }).sort_values(by='Importance', ascending=False).head(top_features)
+            
+#             # RandomForestClassifier Feature Importance
+#             model_rf = RandomForestClassifier()
+#             model_rf.fit(X_encoded, y)
+#             importances_rf = model_rf.feature_importances_
+#             random_forest_df = pd.DataFrame({
+#                 'Feature': X_encoded.columns,
+#                 'Importance': importances_rf
+#             }).sort_values(by='Importance', ascending=False).head(top_features)
+
+#             # Plot for Chi-Square Test
+#             plot_horizontal_bar(chi2_scores_df, 'Feature', 'Chi2 Score', 'Top Features by Chi-Square Test') 
+#             # Plot for Mutual Information
+#             plot_horizontal_bar(mi_scores_df, 'Feature', 'MI Score', 'Top Features by Mutual Information')
+#             # Plot for Extra Trees
+#             plot_horizontal_bar(extra_trees_df, 'Feature', 'Importance', 'Top Features by Extra Trees')
+#             # Plot for Random Forest
+#             plot_horizontal_bar(random_forest_df, 'Feature', 'Importance', 'Top Features by Random Forest')
+
+#             # Create heatmap for feature importance
+#             heatmap_data = pd.DataFrame({
+#                 'Chi-Square': chi2_scores_df.set_index('Feature')['Chi2 Score'],
+#                 'Mutual Information': mi_scores_df.set_index('Feature')['MI Score'],
+#                 'Extra Trees': extra_trees_df.set_index('Feature')['Importance'],
+#                 'Random Forest': random_forest_df.set_index('Feature')['Importance']
+#             }).fillna(0)
+
+#             st.write("### Feature Importance Heatmap")
+#             plot_heatmap(heatmap_data, 'Feature Importance Heatmap')
+
+#             X_filtered = pd.concat([X[corr_features], y], axis=1)
+
+#             # Plot Correlation Heatmap of Selected Features
+#             st.write("### Correlation Heatmap of Selected Features")
+#             plot_correlation_heatmap(X_filtered, 'Correlation Heatmap of Selected Features')
+
+#             ## Clean dataset
+#             st.write("### Final Feature Selected Dataset")
+
+#             selected_features_df = fs.save_selected_features(X, y)
+#             st.write(selected_features_df.head())
+#             st.write(f"Final dataset shape: {selected_features_df.shape}")
+
+#             # Save selected features to CSV
+#             save_path = FEATURE_SELECTION_DATA_PATH_CLF
+#             save_data(selected_features_df, save_path)
+#             st.write(f"Saved Selected Features to {save_path}")
+#             st.success("Dataset saved successfully.....")
+
+#         if st.session_state['feature_selection_done']:
+#             # Display results
+#             st.write("### Feature Selection Completed")
 
 
 
@@ -447,8 +560,8 @@ if nav == "Model building":
             model_to_save = model_dict_to_save[model_name_to_save]
             
             # Fit the model to the entire dataset
-            X = data.drop(columns='target')
-            y = data['target']
+            X = data.drop(columns='res')
+            y = data['res']
 
             model_to_save.fit(X, y)
             # Save the model
